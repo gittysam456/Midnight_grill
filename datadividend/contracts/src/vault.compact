@@ -1,0 +1,14 @@
+pragma compact 1.0.0;
+
+// Data vault handling local encryption and committing shielded records to the Midnight chain
+
+export struct ShieldedRecord {
+  owner: Address,
+  commitment: Field,
+  consentMask: Field
+}
+
+contract Vault {
+  // Stores commitments of user records
+  // (Stub implementation for Midnight hackathon)
+}

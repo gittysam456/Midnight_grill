@@ -1,0 +1,14 @@
+pragma compact 1.0.0;
+
+import "./vault.compact";
+
+// Core ZK aggregate circuit to compute statistical insights over shielded user records.
+// It verifies the query and produces a ZKProof while keeping the individual data private.
+
+circuit countQuery(
+  records: PrivateArray<ShieldedRecord>,
+  predicate: QueryPredicate
+) -> (count: Field, proof: ZKProof) {
+  // filter by consent, evaluate predicate, return aggregate
+  // (Stub implementation for Midnight hackathon)
+}
