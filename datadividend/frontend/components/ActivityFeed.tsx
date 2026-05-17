@@ -2,6 +2,7 @@
 
 import { useSimulation } from "./SimulationProvider";
 import { motion, AnimatePresence } from "framer-motion";
+import { Activity } from "lucide-react";
 
 export default function ActivityFeed() {
   const { activityFeed } = useSimulation();
