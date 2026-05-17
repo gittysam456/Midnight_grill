@@ -36,6 +36,7 @@ interface SimulationState {
   uploadLogs: UploadLog[];
   protectedDatasets: number;
   totalProofs: number;
+  weeklyGrowth: number;
   toggleConsent: (id: string, name: string) => void;
   simulateUpload: (filename: string) => void;
 }
