@@ -1,84 +1,70 @@
 "use client";
 
 import { useSimulation } from "./SimulationProvider";
-import { ShoppingCart, Activity, MapPin, Smartphone, Tv, CreditCard, Shield } from "lucide-react";
+import { ShoppingCart, Activity, MapPin, Smartphone, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
 const categories = [
-  { id: "purchases", name: "Purchase History", icon: ShoppingCart, desc: "E-commerce receipts", est: "12 DUST/wk", risk: "Low", buyers: 4 },
-  { id: "health", name: "Health & Fitness", icon: Activity, desc: "Step counts & vitals", est: "18 DUST/wk", risk: "Medium", buyers: 7 },
-  { id: "location", name: "Location Data", icon: MapPin, desc: "Aggregated GPS", est: "25 DUST/wk", risk: "High", buyers: 12 },
-  { id: "appUsage", name: "App Usage", icon: Smartphone, desc: "Screen time stats", est: "8 DUST/wk", risk: "Low", buyers: 3 },
-  { id: "streaming", name: "Streaming Preferences", icon: Tv, desc: "Watch history", est: "15 DUST/wk", risk: "Low", buyers: 5 },
-  { id: "financial", name: "Financial Behavior", icon: CreditCard, desc: "DeFi activity", est: "40 DUST/wk", risk: "High", buyers: 9 },
+  { id: "purchases", name: "Purchases", icon: ShoppingCart },
+  { id: "fitness", name: "Fitness", icon: Activity },
+  { id: "location", name: "Location", icon: MapPin },
+  { id: "appUsage", name: "App Usage", icon: Smartphone },
+  { id: "health", name: "Health", icon: ShieldCheck },
 ];
 
 export default function ConsentDashboard() {
   const { consents, toggleConsent } = useSimulation();
 
   return (
-    <div className="mb-12">
-      <div className="flex flex-col mb-6">
-        <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-          <span className="text-indigo-400">2.</span> Data Vault Consent Center
-        </h2>
-        <p className="text-sm text-gray-400 mt-1">Control exactly which datasets are queryable via Zero-Knowledge proofs. Toggle to adjust your yield.</p>
+    <div className="bg-[#21212b] border-4 border-black p-6 shadow-[8px_8px_0px_rgba(0,0,0,1)] relative">
+      <div className="absolute top-0 right-0 px-3 py-1 bg-pink-400 border-l-4 border-b-4 border-black text-black font-['var(--font-vt323)'] font-bold text-lg">
+        CONSENT DASHBOARD
       </div>
+      
+      <p className="font-['var(--font-vt323)'] text-gray-300 mt-4 mb-6 text-xl">Select datasets to share via ZK proofs.</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {categories.map((cat, i) => {
           const Icon = cat.icon;
           const isActive = consents[cat.id];
+          
           return (
-            <motion.div 
+            <motion.button 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
               key={cat.id} 
-              className={`group/item flex flex-col p-6 rounded-3xl border transition-all duration-300 cursor-pointer relative overflow-hidden ${
-                isActive 
-                  ? 'bg-indigo-900/10 border-indigo-500/30 hover:bg-indigo-900/20 shadow-[0_4px_30px_rgba(99,102,241,0.05)]' 
-                  : 'bg-[#101016]/80 border-gray-800 hover:border-gray-700 hover:bg-[#15151c]'
-              }`}
               onClick={() => toggleConsent(cat.id, cat.name)}
+              className={`flex flex-col items-center p-4 border-4 transition-all duration-200 relative group
+                ${isActive 
+                  ? 'bg-[#1a1a24] border-pink-400 shadow-[4px_4px_0px_rgba(244,114,182,1)] translate-y-[-2px] translate-x-[-2px]' 
+                  : 'bg-[#16161d] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:bg-[#1a1a24]'
+                }`}
             >
-              {isActive && (
-                <div className="absolute top-0 right-0 p-20 bg-indigo-500/10 rounded-full blur-[50px] pointer-events-none" />
-              )}
-              
-              <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className={`p-3 rounded-2xl transition-all duration-300 ${isActive ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-gray-800 text-gray-400'}`}>
-                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                </div>
-                
-                <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ease-in-out flex items-center ${isActive ? 'bg-indigo-500' : 'bg-gray-700'}`}>
-                  <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ease-in-out flex items-center justify-center ${isActive ? 'translate-x-6' : 'translate-x-0'}`} />
-                </div>
+              <div className={`p-3 mb-3 border-2 border-black ${isActive ? 'bg-pink-400 text-black' : 'bg-[#2b2b36] text-gray-400'}`}>
+                <Icon size={24} />
               </div>
               
-              <div className="relative z-10 mb-5 flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className={`font-bold text-lg transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-300'}`}>{cat.name}</h3>
-                  {isActive && <Shield size={14} className="text-emerald-400" />}
-                </div>
-                <p className="text-xs text-gray-500">{cat.desc}</p>
-              </div>
+              <h3 className={`font-['var(--font-vt323)'] text-xl mb-3 uppercase drop-shadow-[1px_1px_0_#000] ${isActive ? 'text-pink-400' : 'text-gray-300'}`}>
+                {cat.name}
+              </h3>
 
-              <div className="grid grid-cols-2 gap-2 mt-auto relative z-10 pt-4 border-t border-gray-800/60">
-                <div>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Est. Yield</p>
-                  <p className={`text-sm font-bold ${isActive ? 'text-emerald-400' : 'text-gray-400'}`}>{cat.est}</p>
+              {/* Status Indicators */}
+              <div className="w-full flex flex-col gap-1.5 mt-auto">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase font-mono">
+                  <span className="text-gray-500">Shared</span>
+                  <span className={isActive ? 'text-emerald-400' : 'text-red-400'}>{isActive ? 'YES' : 'NO'}</span>
                 </div>
-                <div>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Demand</p>
-                  <p className="text-sm font-bold text-gray-300">{cat.buyers} Active Buyers</p>
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase font-mono">
+                  <span className="text-gray-500">Shielded</span>
+                  <span className="text-teal-400">YES</span>
                 </div>
-                <div className="col-span-2 flex justify-between items-center mt-2 bg-black/20 p-2 rounded-xl">
-                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Privacy Risk</span>
-                  <span className={`text-xs font-bold ${cat.risk === 'Low' ? 'text-emerald-400' : cat.risk === 'Medium' ? 'text-amber-400' : 'text-red-400'}`}>{cat.risk}</span>
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase font-mono">
+                  <span className="text-gray-500">Encrypted</span>
+                  <span className="text-teal-400">YES</span>
                 </div>
               </div>
-            </motion.div>
+            </motion.button>
           );
         })}
       </div>

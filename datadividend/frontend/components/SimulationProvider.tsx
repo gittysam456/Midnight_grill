@@ -7,40 +7,37 @@ export interface QueryEvent {
   id: string;
   buyer: string;
   dataset: string;
-  purpose: string;
-  privacyLevel: "Standard" | "Strict" | "Maximum";
   reward: string;
-  participants: number;
-  status: "Searching datasets" | "Awaiting consent" | "Generating proof" | "Proof verified" | "Reward distributed";
-  timeRemaining: string;
+  contributors: number;
+  status: "Generating proof..." | "Verifying aggregate..." | "Reward distribution..." | "Complete ✓";
   timestamp: number;
-}
-
-export interface ProofStep {
-  id: string;
-  timestamp: number;
-  message: string;
-  type: "info" | "processing" | "success" | "reward";
 }
 
 export interface ActivityEvent {
   id: string;
   timestamp: number;
   message: string;
+  txHash?: string;
   category: "marketplace" | "proof" | "reward" | "system";
 }
 
+export interface UploadLog {
+  id: string;
+  message: string;
+  status: "pending" | "success" | "error";
+}
+
 interface SimulationState {
+  currentBlock: number;
   earnings: number;
-  weeklyGrowth: number;
   consents: Record<string, boolean>;
   activeQueries: QueryEvent[];
-  proofTimeline: ProofStep[];
   activityFeed: ActivityEvent[];
-  privacyScore: number;
+  uploadLogs: UploadLog[];
   protectedDatasets: number;
   totalProofs: number;
   toggleConsent: (id: string, name: string) => void;
+  simulateUpload: (filename: string) => void;
 }
 
 const defaultConsents = {
@@ -48,64 +45,86 @@ const defaultConsents = {
   health: false,
   location: true,
   appUsage: false,
-  streaming: true,
-  financial: false,
+  fitness: false,
 };
 
-const mockBuyers = ["RetailAI DAO", "HealthAnalytics Inc", "Urban Mobility Labs", "AdTarget Systems", "Consumer Insight Network"];
-const mockDatasets = ["Spending Trends", "Fitness Ranges", "Mobility Heatmap", "App Engagement", "Content Preferences"];
-const mockPurposes = ["Market Research", "Academic Study", "Infrastructure Planning", "Behavioral Targeting", "Demographic Analysis"];
+const mockBuyers = ["RetailAI DAO", "HealthCorp", "Urban Mobility Labs", "AdTarget Systems"];
+const mockQueries = [
+  "How many users aged 25-34 workout weekly?",
+  "What is the average weekly spending on coffee?",
+  "How many users visit downtown > 3x a week?",
+  "What is the average screen time per day?",
+];
 
 const SimulationContext = createContext<SimulationState | null>(null);
 
+const generateMockTxHash = () => `0x${Array.from({ length: 8 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}...${Array.from({ length: 4 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+
 export function SimulationProvider({ children }: { children: ReactNode }) {
+  const [currentBlock, setCurrentBlock] = useState(8921445);
   const [consents, setConsents] = useState<Record<string, boolean>>(defaultConsents);
-  const [earnings, setEarnings] = useState(428.50);
-  const [weeklyGrowth, setWeeklyGrowth] = useState(12.4);
+  const [earnings, setEarnings] = useState(4.82);
   const [activeQueries, setActiveQueries] = useState<QueryEvent[]>([]);
-  const [proofTimeline, setProofTimeline] = useState<ProofStep[]>([]);
   const [activityFeed, setActivityFeed] = useState<ActivityEvent[]>([]);
-  const [privacyScore, setPrivacyScore] = useState(96);
+  const [uploadLogs, setUploadLogs] = useState<UploadLog[]>([]);
   const [protectedDatasets, setProtectedDatasets] = useState(124);
   const [totalProofs, setTotalProofs] = useState(1892);
 
   // Load state on mount
   useEffect(() => {
-    const saved = localStorage.getItem("dataDividendConsentsExpanded");
+    const saved = localStorage.getItem("dataDividendConsentsV2");
     if (saved) setConsents(JSON.parse(saved));
-    
-    // Seed initial data
-    addFeedEvent("System initialized securely. ZK proving environment ready.", "system");
   }, []);
 
-  const addProofStep = (message: string, type: ProofStep["type"]) => {
-    setProofTimeline(prev => [...prev.slice(-15), { id: Math.random().toString(), timestamp: Date.now(), message, type }]);
-  };
-
-  const addFeedEvent = (message: string, category: ActivityEvent["category"]) => {
-    setActivityFeed(prev => [{ id: Math.random().toString(), timestamp: Date.now(), message, category }, ...prev].slice(0, 20));
+  const addFeedEvent = (message: string, category: ActivityEvent["category"], withTx = false) => {
+    setActivityFeed(prev => [{ 
+      id: Math.random().toString(), 
+      timestamp: Date.now(), 
+      message, 
+      category,
+      txHash: withTx ? generateMockTxHash() : undefined
+    }, ...prev].slice(0, 20));
   };
 
   useEffect(() => {
     const activeCount = Object.values(consents).filter(Boolean).length;
-    setPrivacyScore(100 - activeCount); // Max sharing = 94% privacy score (still high due to ZK)
     setProtectedDatasets(activeCount * 42);
   }, [consents]);
 
   const toggleConsent = (id: string, name: string) => {
     setConsents((prev) => {
       const newState = { ...prev, [id]: !prev[id] };
-      localStorage.setItem("dataDividendConsentsExpanded", JSON.stringify(newState));
+      localStorage.setItem("dataDividendConsentsV2", JSON.stringify(newState));
       
       if (newState[id]) {
-        toast.success(`Vault updated`, { description: `${name} is now queryable.` });
-        addFeedEvent(`Consent updated: ${name} sharing enabled`, "system");
-        addProofStep(`Dataset [${name.toUpperCase()}] unlocked for matching`, "info");
+        toast.success(`Vault updated`, { description: `${name} is now shielded.` });
+        addFeedEvent(`Shielded record committed: ${name}`, "system", true);
       } else {
         toast.info(`Vault updated`, { description: `${name} sharing paused.` });
-        addFeedEvent(`Consent updated: ${name} sharing revoked`, "system");
+        addFeedEvent(`Consent updated: ${name} sharing revoked`, "system", true);
       }
       return newState;
+    });
+  };
+
+  const simulateUpload = (filename: string) => {
+    setUploadLogs([]);
+    const logs = [
+      { msg: `${filename} uploaded`, delay: 500 },
+      { msg: `${Math.floor(Math.random() * 5000 + 1000)} rows parsed`, delay: 1500 },
+      { msg: `Categories detected`, delay: 2500 },
+      { msg: `Encrypted locally ✓`, delay: 4000 },
+      { msg: `Committed to Midnight ✓`, delay: 5500 }
+    ];
+
+    logs.forEach((log, index) => {
+      setTimeout(() => {
+        setUploadLogs(prev => [...prev, { id: Math.random().toString(), message: log.msg, status: "success" }]);
+        if (index === logs.length - 1) {
+            addFeedEvent(`New dataset committed to vault`, "system", true);
+            setProtectedDatasets(p => p + 14);
+        }
+      }, log.delay);
     });
   };
 
@@ -114,39 +133,34 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
     const activeCount = Object.values(consents).filter(Boolean).length;
     if (activeCount === 0) return;
 
-    // 1. Live Earnings Ticker
-    const earningInterval = setInterval(() => {
-      setEarnings(prev => prev + (Math.random() * 0.05));
-    }, 2000);
+    // 1. Block Ticker
+    const blockInterval = setInterval(() => {
+      setCurrentBlock(prev => prev + 1);
+    }, 12000); // Average block time
 
     // 2. Marketplace Logic
     const marketInterval = setInterval(() => {
       setActiveQueries(prev => {
         let updated = prev.map(q => {
-          if (q.status === "Reward distributed") return q;
+          if (q.status === "Complete ✓") return q;
           
           const transitions: Record<string, QueryEvent["status"]> = {
-            "Searching datasets": "Awaiting consent",
-            "Awaiting consent": "Generating proof",
-            "Generating proof": "Proof verified",
-            "Proof verified": "Reward distributed"
+            "Generating proof...": "Verifying aggregate...",
+            "Verifying aggregate...": "Reward distribution...",
+            "Reward distribution...": "Complete ✓"
           };
           
           const nextStatus = transitions[q.status];
           if (nextStatus && Math.random() > 0.4) {
-            // Push to timeline/feed based on status change
-            if (nextStatus === "Generating proof") addProofStep(`Generating zero-knowledge proof for ${q.buyer}...`, "processing");
-            if (nextStatus === "Proof verified") {
-              addProofStep(`Proof verified successfully on chain`, "success");
-              addFeedEvent(`Proof validated successfully for ${q.dataset}`, "proof");
-              setTotalProofs(p => p + 1);
+            if (nextStatus === "Verifying aggregate...") {
+                addFeedEvent(`ZK proof verified for ${q.buyer} query`, "proof", true);
             }
-            if (nextStatus === "Reward distributed") {
+            if (nextStatus === "Complete ✓") {
               const rewardVal = parseFloat(q.reward);
-              const cut = (rewardVal * 0.01).toFixed(2);
-              addProofStep(`+${cut} DUST credited from ${q.buyer}`, "reward");
-              addFeedEvent(`Reward settled: +${cut} DUST`, "reward");
-              setEarnings(e => e + parseFloat(cut));
+              const cut = (rewardVal * 0.05).toFixed(2);
+              addFeedEvent(`Reward distributed: +${cut} DUST`, "reward", true);
+              setTotalProofs(p => p + 1);
+              setEarnings(e => parseFloat((e + parseFloat(cut)).toFixed(2)));
               toast.success("Reward distributed", { description: `+${cut} DUST added to vault` });
             }
             return { ...q, status: nextStatus };
@@ -155,38 +169,34 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         });
 
         // Add new queries
-        if (Math.random() < 0.4 && updated.length < 5) {
+        if (Math.random() < 0.4 && updated.length < 4) {
           const buyer = mockBuyers[Math.floor(Math.random() * mockBuyers.length)];
-          const dataset = mockDatasets[Math.floor(Math.random() * mockDatasets.length)];
-          addFeedEvent(`New marketplace demand: ${buyer} is searching for ${dataset}`, "marketplace");
-          addProofStep(`Request received from ${buyer} for ${dataset}`, "info");
+          const dataset = mockQueries[Math.floor(Math.random() * mockQueries.length)];
+          addFeedEvent(`${buyer} query executed`, "marketplace", true);
           
           const newQ: QueryEvent = {
             id: `REQ-${Math.floor(Math.random() * 90000)}`,
             buyer,
             dataset,
-            purpose: mockPurposes[Math.floor(Math.random() * mockPurposes.length)],
-            privacyLevel: Math.random() > 0.5 ? "Maximum" : "Strict",
-            reward: `${(Math.random() * 50 + 10).toFixed(1)} DUST`,
-            participants: Math.floor(Math.random() * 10000),
-            status: "Searching datasets",
-            timeRemaining: `${Math.floor(Math.random() * 20 + 2)}m`,
+            reward: `${(Math.random() * 5 + 1).toFixed(1)} DUST`,
+            contributors: Math.floor(Math.random() * 300) + 50,
+            status: "Generating proof...",
             timestamp: Date.now(),
           };
-          updated = [newQ, ...updated].slice(0, 6);
+          updated = [newQ, ...updated].slice(0, 5);
         }
-        return updated.filter(q => q.status !== "Reward distributed" || Date.now() - q.timestamp < 10000);
+        return updated.filter(q => q.status !== "Complete ✓" || Date.now() - q.timestamp < 8000);
       });
-    }, 4000);
+    }, 5000);
 
     return () => {
-      clearInterval(earningInterval);
+      clearInterval(blockInterval);
       clearInterval(marketInterval);
     };
   }, [consents]);
 
   return (
-    <SimulationContext.Provider value={{ earnings, weeklyGrowth, consents, activeQueries, proofTimeline, activityFeed, privacyScore, protectedDatasets, totalProofs, toggleConsent }}>
+    <SimulationContext.Provider value={{ currentBlock, earnings, consents, activeQueries, activityFeed, uploadLogs, protectedDatasets, totalProofs, toggleConsent, simulateUpload }}>
       {children}
     </SimulationContext.Provider>
   );
