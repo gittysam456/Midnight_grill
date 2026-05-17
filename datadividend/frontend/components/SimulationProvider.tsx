@@ -37,6 +37,7 @@ interface SimulationState {
   protectedDatasets: number;
   totalProofs: number;
   weeklyGrowth: number;
+  privacyScore: number;
   toggleConsent: (id: string, name: string) => void;
   simulateUpload: (filename: string) => void;
 }
@@ -197,7 +198,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   }, [consents]);
 
   return (
-    <SimulationContext.Provider value={{ currentBlock, earnings, consents, activeQueries, activityFeed, uploadLogs, protectedDatasets, totalProofs, toggleConsent, simulateUpload }}>
+    <SimulationContext.Provider value={{ currentBlock, earnings, consents, activeQueries, activityFeed, uploadLogs, protectedDatasets, totalProofs, weeklyGrowth: 14.2, privacyScore: 98, toggleConsent, simulateUpload }}>
       {children}
     </SimulationContext.Provider>
   );
