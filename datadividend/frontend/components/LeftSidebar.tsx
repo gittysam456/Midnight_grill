@@ -20,8 +20,8 @@ const navItems = [
 
 export default function LeftSidebar({ activeTab, setActiveTab }: LeftSidebarProps) {
   return (
-    <aside className="w-64 bg-[#21212b] border-r-4 border-[#16161d] hidden md:flex flex-col fixed h-[calc(100vh-4rem)]">
-      <div className="p-4 flex flex-col gap-2 font-['var(--font-vt323)'] text-xl mt-4">
+    <aside className="w-64 bg-[#2D2834]/60 backdrop-blur-md border-r border-[#3E3648] hidden md:flex flex-col fixed h-[calc(100vh-4rem)] shadow-[4px_0_24px_rgba(0,0,0,0.1)]">
+      <div className="p-4 flex flex-col gap-2 font-['var(--font-space-mono)'] text-sm mt-4">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
@@ -30,17 +30,20 @@ export default function LeftSidebar({ activeTab, setActiveTab }: LeftSidebarProp
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-3 px-4 py-3 border-2 transition-all relative
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative overflow-hidden group
                 ${isActive 
-                  ? `bg-[#2b2b36] border-black text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] translate-x-1` 
-                  : `border-transparent text-gray-400 hover:bg-[#262631] hover:text-gray-200`
+                  ? `bg-[#23202C]/60 text-[#F5EFE8] border border-[#52485D] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]` 
+                  : `border border-transparent text-[#B9B0C7] hover:bg-[#23202C]/40 hover:text-[#F5EFE8]`
                 }`}
             >
-              <Icon size={20} className={`${isActive ? item.color : 'text-gray-500'}`} />
-              <span className="uppercase tracking-wide drop-shadow-[1px_1px_0_rgba(0,0,0,0.5)]">{item.label}</span>
+              {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#47E5BC] rounded-r-md shadow-[0_0_8px_#47E5BC]" />}
+              <Icon size={18} className={`${isActive ? 'text-[#47E5BC]' : 'text-[#7E7890] group-hover:text-[#B9B0C7]'}`} />
+              <span className="tracking-wide">{item.label}</span>
               
               {item.id === "buyer" && (
-                <span className="absolute right-2 top-2 px-1.5 py-0.5 bg-rose-500 text-white text-[10px] border border-black shadow-[1px_1px_0_#000]">BETA</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 bg-[#F472B6]/10 text-[#F472B6] text-[10px] rounded border border-[#F472B6]/30">
+                  BETA
+                </span>
               )}
             </button>
           );
@@ -48,10 +51,10 @@ export default function LeftSidebar({ activeTab, setActiveTab }: LeftSidebarProp
       </div>
       
       <div className="mt-auto p-6 text-center">
-        <div className="w-full bg-[#16161d] border-2 border-black p-4 shadow-[inset_2px_2px_0px_rgba(0,0,0,0.5)]">
-          <div className="text-pink-400 font-['var(--font-vt323)'] text-lg uppercase mb-1 drop-shadow-[1px_1px_0_#000]">Node Status</div>
-          <div className="flex justify-center items-center gap-2 text-emerald-400 text-sm font-['var(--font-vt323)'] uppercase">
-             <span className="w-2 h-2 bg-emerald-400 border border-black shadow-[1px_1px_0_#000]"></span> Syncing
+        <div className="w-full bg-[#23202C]/60 border border-[#3E3648] p-4 rounded-xl shadow-[inset_0_1px_3px_rgba(0,0,0,0.2)]">
+          <div className="text-[#B9B0C7] font-['var(--font-space-mono)'] text-xs uppercase mb-2">Node Status</div>
+          <div className="flex justify-center items-center gap-2 text-[#47E5BC] text-xs font-['var(--font-space-mono)'] uppercase font-bold">
+             <span className="w-2 h-2 bg-[#47E5BC] rounded-full shadow-[0_0_8px_#47E5BC] animate-pulse"></span> SYNCING
           </div>
         </div>
       </div>

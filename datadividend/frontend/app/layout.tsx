@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, VT323 } from "next/font/google";
+import { Space_Mono } from "next/font/google";
 import "./globals.css";
 
 import { Toaster } from "sonner";
 import { SimulationProvider } from "@/components/SimulationProvider";
 
-const inter = Inter({ subsets: ["latin"] });
-const vt323 = VT323({ weight: "400", subsets: ["latin"], variable: '--font-vt323' });
+const spaceMono = Space_Mono({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-space-mono" });
 
 export const metadata: Metadata = {
   title: "DataDividend | Zero-Knowledge Data Marketplace",
@@ -19,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${vt323.variable}`}>
-      <body className={`${inter.className} antialiased bg-[#1e1e24] text-gray-200`}>
+    <html lang="en" suppressHydrationWarning className={`${spaceMono.variable}`}>
+      <body className={`${spaceMono.className} antialiased bg-[#E9D7CC] text-[#F5EFE8] text-sm`}>
         <SimulationProvider>
           {children}
           <Toaster theme="dark" position="bottom-right" richColors closeButton />

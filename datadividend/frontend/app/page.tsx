@@ -74,15 +74,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1e1e24] text-gray-200 selection:bg-pink-400 selection:text-black flex flex-col font-sans overflow-hidden">
+    <div className="min-h-screen bg-[#E9D7CC] text-[#F5EFE8] selection:bg-[#47E5BC] selection:text-[#2D2834] flex flex-col overflow-hidden">
       
-      {/* Background Pixel Grid */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+      {/* Soft Dotted Grid (Matching Reference) */}
+      <div className="fixed inset-0 pointer-events-none opacity-20 z-0" style={{ backgroundImage: 'radial-gradient(#52485D 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
 
       {walletState ? (
         <>
           <TopNavbar walletState={walletState} onDisconnect={() => setWalletState(null)} />
-          <div className="flex flex-1 relative z-10 pt-16 mt-[-4rem]"> {/* Adjust for fixed navbar */}
+          <div className="flex flex-1 relative z-10 pt-16 mt-[-4rem]">
             <LeftSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
             <main className="flex-1 md:ml-64 h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden custom-scrollbar">
               <AnimatePresence mode="wait">
@@ -94,43 +94,43 @@ export default function Home() {
       ) : (
         <main className="flex-1 flex flex-col items-center justify-center relative z-10 px-6">
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#21212b] border-4 border-black p-10 md:p-16 max-w-2xl w-full text-center shadow-[16px_16px_0px_rgba(0,0,0,1)] relative"
+            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            className="bg-[#2D2834]/80 backdrop-blur-md border border-[#3E3648] p-10 md:p-16 max-w-2xl w-full text-center shadow-[4px_4px_15px_rgba(0,0,0,0.15)] rounded-2xl relative"
           >
-            <div className="w-24 h-24 bg-teal-400 border-4 border-black shadow-[4px_4px_0_#000] mx-auto mb-8 flex items-center justify-center">
-              <ShieldCheck size={48} className="text-black" />
+            <div className="w-20 h-20 bg-[#47E5BC]/10 border border-[#47E5BC]/30 shadow-[0_0_15px_rgba(71,229,188,0.2)] mx-auto mb-8 flex items-center justify-center rounded-xl">
+              <ShieldCheck size={40} className="text-[#47E5BC]" />
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-['var(--font-vt323)'] uppercase text-white drop-shadow-[4px_4px_0_#000] mb-6">
+            <h1 className="text-4xl md:text-5xl font-['var(--font-space-mono)'] uppercase text-[#F5EFE8] mb-6 tracking-tight">
               DataDividend
             </h1>
             
-            <p className="text-xl text-gray-400 mb-12 font-medium">
-              Zero-knowledge data monetization. 
-              <br/> Earn <span className="text-pink-400 font-bold drop-shadow-[1px_1px_0_#000]">DUST</span> while keeping your raw data locally encrypted.
+            <p className="text-[#B9B0C7] mb-12 font-medium leading-relaxed max-w-md mx-auto">
+              Secure blockchain terminal. 
+              <br/> Earn <span className="text-[#D4B15A] font-bold">DUST</span> while keeping your raw data locally encrypted.
             </p>
 
             {error && (
-              <div className="mb-8 flex items-center justify-center gap-2 text-red-400 bg-red-950/50 p-4 border-2 border-red-500 shadow-[4px_4px_0_rgba(239,68,68,1)]">
+              <div className="mb-8 flex items-center justify-center gap-2 text-[#F472B6] bg-[#F472B6]/10 p-4 border border-[#F472B6]/30 rounded-xl">
                 <AlertCircle size={20} />
-                <span className="font-['var(--font-vt323)'] text-xl">{error}</span>
+                <span className="font-['var(--font-space-mono)'] text-sm">{error}</span>
               </div>
             )}
 
             <button
               onClick={handleConnect}
               disabled={isConnecting}
-              className="w-full md:w-auto mx-auto bg-pink-400 hover:bg-pink-300 border-4 border-black text-black font-['var(--font-vt323)'] text-2xl py-4 px-12 shadow-[8px_8px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] active:translate-y-2 active:translate-x-2 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+              className="w-full md:w-auto mx-auto bg-[#47E5BC] hover:bg-[#5EEAD4] border border-[#3E3648] text-[#2D2834] font-['var(--font-space-mono)'] font-bold text-lg py-3 px-10 shadow-[0_4px_15px_rgba(71,229,188,0.3)] hover:shadow-[0_6px_20px_rgba(71,229,188,0.4)] active:translate-y-1 transition-all disabled:opacity-50 flex items-center justify-center gap-3 rounded-xl"
             >
               {isConnecting ? (
                 <>
-                  <div className="w-5 h-5 border-4 border-black border-t-transparent animate-spin" />
-                  CONNECTING...
+                  <div className="w-5 h-5 border-2 border-[#2D2834] border-t-transparent animate-spin rounded-full" />
+                  CONNECTING
                 </>
               ) : (
                 <>
-                  CONNECT WALLET <Fingerprint size={24} />
+                  CONNECT TERMINAL <Fingerprint size={20} />
                 </>
               )}
             </button>
