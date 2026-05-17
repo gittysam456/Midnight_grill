@@ -24,11 +24,11 @@ DataDividend flips the model:
 
 ## Demo
 
-![DataDividend Demo](./assets/demo.gif)
+
 
 > User vaults data → Company submits query → ZK proof generated → User earns tokens
 
-**Live demo:**(Deployment URL)
+**Live demo:** https://data-dividend.vercel.app/
 
 ---
 
